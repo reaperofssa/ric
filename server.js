@@ -61,8 +61,8 @@ const generateVerificationCode = () => {
 const transporter = nodemailer.createTransporter({
     service: 'gmail',
     auth: {
-        user: 'your.email@gmail.com',
-        pass: 'your_app_password'
+        user: 'maskeelone0@gmail.com',
+        pass: 'ktxr wjdf rkyt qvhj'
     }
 });
 
