@@ -101,7 +101,7 @@ const generateVerificationCode = () => {
 };
 
 // Configure nodemailer transport
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'maskeelone0@gmail.com',
