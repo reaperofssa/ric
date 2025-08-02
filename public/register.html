@@ -10,28 +10,48 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b2e 50%, #1a1a1a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            color: #ffffff;
         }
-
+        
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ff69b4;
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.2);
             backdrop-filter: blur(10px);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             animation: slideUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff69b4, #ff1493, #ff69b4);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -42,143 +62,269 @@
                 transform: translateY(0);
             }
         }
-
+        
         .logo {
             text-align: center;
             margin-bottom: 30px;
         }
-
+        
         .logo h1 {
-            color: #667eea;
+            color: #ff69b4;
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
         }
-
+        
         .logo p {
-            color: #666;
+            color: #cccccc;
             font-size: 0.9rem;
         }
-
+        
         .form-group {
             margin-bottom: 20px;
+            position: relative;
         }
-
+        
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: #ff69b4;
             font-weight: 500;
         }
-
+        
         .form-group input {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e1e1e1;
+            border: 1px solid #ff69b4;
             border-radius: 10px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
         }
-
+        
+        .form-group input::placeholder {
+            color: #cccccc;
+        }
+        
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #ff1493;
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
         }
-
+        
+        .form-group input.error {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+        }
+        
+        .email-hint {
+            font-size: 0.8rem;
+            color: #ff69b4;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        
+        .email-validation {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            font-size: 1.2rem;
+        }
+        
+        .email-validation.valid {
+            color: #28a745;
+        }
+        
+        .email-validation.invalid {
+            color: #dc3545;
+        }
+        
         .btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
             color: white;
-            border: none;
+            border: 1px solid #ff69b4;
             border-radius: 10px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
-        .btn:hover {
+        
+        .btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.4);
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
         }
-
+        
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-
+        
         .verification-section {
             display: none;
             margin-top: 20px;
             padding: 20px;
-            background: #f8f9fa;
+            background: rgba(255, 105, 180, 0.1);
+            border: 1px solid #ff69b4;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #ff69b4;
         }
-
+        
         .verification-section h3 {
-            color: #667eea;
+            color: #ff69b4;
             margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
         }
-
+        
+        .verification-section p {
+            color: #cccccc;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
         .message {
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 15px;
             display: none;
+            border: 1px solid;
         }
-
+        
         .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border-color: #28a745;
         }
-
+        
         .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border-color: #dc3545;
         }
-
+        
         .login-link {
             text-align: center;
             margin-top: 20px;
         }
-
+        
         .login-link a {
-            color: #667eea;
+            color: #ff69b4;
             text-decoration: none;
             font-weight: 500;
+            transition: all 0.3s ease;
         }
-
+        
         .login-link a:hover {
             text-decoration: underline;
+            color: #ff1493;
+            text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
         }
-
+        
         .loading {
             display: none;
             text-align: center;
             margin-top: 10px;
         }
-
+        
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid rgba(255, 105, 180, 0.3);
+            border-top: 3px solid #ff69b4;
             border-radius: 50%;
             width: 30px;
             height: 30px;
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        .loading p {
+            color: #cccccc;
+            margin-top: 10px;
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .strength-bar {
+            height: 3px;
+            background: rgba(255, 105, 180, 0.2);
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-weak { 
+            background: #dc3545; 
+            width: 33%; 
+        }
+        
+        .strength-medium { 
+            background: #ffc107; 
+            width: 66%; 
+        }
+        
+        .strength-strong { 
+            background: #28a745; 
+            width: 100%; 
+        }
+        
+        .requirements {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #cccccc;
+        }
+        
+        .requirements ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .requirements li {
+            margin: 3px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .requirements li:before {
+            content: "✗";
+            color: #dc3545;
+            position: absolute;
+            left: 0;
+        }
+        
+        .requirements li.valid:before {
+            content: "✓";
+            color: #28a745;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -188,31 +334,46 @@
             <h1>Akane Pairing</h1>
             <p>Create your account</p>
         </div>
-
+        
         <div id="message" class="message"></div>
-
+        
         <form id="registerForm">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" required placeholder="Enter your username">
             </div>
-
+            
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="your.email@gmail.com">
+                <div class="email-validation" id="emailValidation"></div>
+                <div class="email-hint">Only Gmail addresses (@gmail.com) are accepted</div>
             </div>
-
+            
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" required placeholder="Create a strong password">
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                </div>
+                <div class="requirements">
+                    <ul id="passwordRequirements">
+                        <li id="req-length">At least 8 characters</li>
+                        <li id="req-uppercase">One uppercase letter</li>
+                        <li id="req-lowercase">One lowercase letter</li>
+                        <li id="req-number">One number</li>
+                    </ul>
+                </div>
             </div>
-
+            
             <button type="submit" class="btn" id="registerBtn">Create Account</button>
         </form>
-
+        
         <div id="verificationSection" class="verification-section">
             <h3>Verify Your Email</h3>
-            <p>We've sent a 6-digit verification code to your email address.</p>
+            <p>We've sent a 6-digit verification code to your Gmail address. Please check your inbox and enter the code below.</p>
             
             <div class="form-group">
                 <label for="verificationCode">Verification Code</label>
@@ -221,12 +382,12 @@
             
             <button type="button" class="btn" id="verifyBtn">Verify Email</button>
         </div>
-
+        
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p>Processing...</p>
         </div>
-
+        
         <div class="login-link">
             <p>Already have an account? <a href="/login">Sign in here</a></p>
         </div>
@@ -235,6 +396,46 @@
     <script>
         let currentUsername = '';
         let authToken = '';
+
+        // Email validation for Gmail only
+        function validateEmail(email) {
+            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+            return gmailRegex.test(email);
+        }
+
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /\d/.test(password)
+            };
+
+            // Update requirement indicators
+            Object.keys(requirements).forEach(req => {
+                const element = document.getElementById(`req-${req}`);
+                if (requirements[req]) {
+                    element.classList.add('valid');
+                    strength++;
+                } else {
+                    element.classList.remove('valid');
+                }
+            });
+
+            // Update strength bar
+            const strengthFill = document.getElementById('strengthFill');
+            if (strength <= 1) {
+                strengthFill.className = 'strength-fill strength-weak';
+            } else if (strength <= 3) {
+                strengthFill.className = 'strength-fill strength-medium';
+            } else {
+                strengthFill.className = 'strength-fill strength-strong';
+            }
+
+            return strength === 4;
+        }
 
         function showMessage(text, type) {
             const messageEl = document.getElementById('message');
@@ -251,15 +452,53 @@
             document.getElementById('loading').style.display = show ? 'block' : 'none';
         }
 
+        // Real-time email validation
+        document.getElementById('email').addEventListener('input', (e) => {
+            const email = e.target.value;
+            const validation = document.getElementById('emailValidation');
+            
+            if (email.length === 0) {
+                validation.textContent = '';
+                e.target.classList.remove('error');
+                return;
+            }
+            
+            if (validateEmail(email)) {
+                validation.textContent = '✓';
+                validation.className = 'email-validation valid';
+                e.target.classList.remove('error');
+            } else {
+                validation.textContent = '✗';
+                validation.className = 'email-validation invalid';
+                e.target.classList.add('error');
+            }
+        });
+
+        // Real-time password validation
+        document.getElementById('password').addEventListener('input', (e) => {
+            checkPasswordStrength(e.target.value);
+        });
+
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
+            // Validation
             if (!username || !email || !password) {
                 showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showMessage('Please enter a valid Gmail address (@gmail.com)', 'error');
+                return;
+            }
+
+            if (!checkPasswordStrength(password)) {
+                showMessage('Password must meet all requirements', 'error');
                 return;
             }
 
@@ -281,7 +520,7 @@
                     currentUsername = username;
                     authToken = data.authToken;
                     
-                    showMessage('Registration successful! Check your email for verification code.', 'success');
+                    showMessage('Registration successful! Check your Gmail for verification code.', 'success');
                     document.getElementById('verificationSection').style.display = 'block';
                     document.getElementById('registerForm').style.display = 'none';
                 } else {
@@ -294,7 +533,7 @@
         });
 
         document.getElementById('verifyBtn').addEventListener('click', async () => {
-            const code = document.getElementById('verificationCode').value;
+            const code = document.getElementById('verificationCode').value.trim();
             
             if (!code || code.length !== 6) {
                 showMessage('Please enter a valid 6-digit code', 'error');
@@ -309,9 +548,9 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 
-                        username: currentUsername, 
-                        code: code 
+                    body: JSON.stringify({
+                        username: currentUsername,
+                        code: code
                     })
                 });
 
@@ -336,9 +575,14 @@
             }
         });
 
-        // Auto-format verification code input
+        // Auto-format verification code input (numbers only)
         document.getElementById('verificationCode').addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Username validation (no spaces, special characters)
+        document.getElementById('username').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
         });
     </script>
 </body>
