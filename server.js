@@ -290,15 +290,23 @@ app.post('/start', async (req, res) => {
     }
 
     try {
-        // Make deploy request to external API
-        const deployResponse = await axios.post('https://tested-0939583b45ae.herokuapp.com/deploy', {
-            session_id: session_id
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            timeout: 30000 // 30 second timeout
-        });
+    // Clean the session_id before using it
+    const cleanSessionId = String(session_id)
+        .trim()                     // Remove leading/trailing whitespace
+        .replace(/\u200B/g, '')    // Remove zero-width spaces
+        .replace(/\s/g, '');       // Remove any accidental spaces
+
+    console.log('Cleaned session_id:', JSON.stringify(cleanSessionId));
+
+    // Make deploy request to external API
+    const deployResponse = await axios.post('https://tested-0939583b45ae.herokuapp.com/deploy', {
+        session_id: cleanSessionId
+    }, {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        timeout: 30000 // 30 second timeout
+    });
 
         // Check if deploy was successful
         if (deployResponse.status === 200 || deployResponse.status === 201) {
