@@ -10,28 +10,48 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b2e 50%, #1a1a1a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            color: #ffffff;
         }
-
+        
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ff69b4;
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.2);
             backdrop-filter: blur(10px);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             animation: slideUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff69b4, #ff1493, #ff69b4);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -42,135 +62,162 @@
                 transform: translateY(0);
             }
         }
-
+        
         .logo {
             text-align: center;
             margin-bottom: 30px;
         }
-
+        
         .logo h1 {
-            color: #667eea;
+            color: #ff69b4;
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
         }
-
+        
         .logo p {
-            color: #666;
+            color: #cccccc;
             font-size: 0.9rem;
         }
-
+        
         .form-group {
             margin-bottom: 20px;
+            position: relative;
         }
-
+        
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: #ff69b4;
             font-weight: 500;
         }
-
+        
         .form-group input {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e1e1e1;
+            border: 1px solid #ff69b4;
             border-radius: 10px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
         }
-
+        
+        .form-group input::placeholder {
+            color: #cccccc;
+        }
+        
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #ff1493;
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
         }
-
+        
+        .form-group input:hover {
+            border-color: #ff1493;
+        }
+        
         .btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
             color: white;
-            border: none;
+            border: 1px solid #ff69b4;
             border-radius: 10px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
-        .btn:hover {
+        
+        .btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.4);
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
         }
-
+        
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-
+        
         .message {
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 15px;
             display: none;
+            border: 1px solid;
         }
-
+        
         .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border-color: #28a745;
         }
-
+        
         .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border-color: #dc3545;
         }
-
+        
+        .message.info {
+            background: rgba(255, 105, 180, 0.2);
+            color: #ff69b4;
+            border-color: #ff69b4;
+        }
+        
         .register-link {
             text-align: center;
             margin-top: 20px;
         }
-
+        
         .register-link a {
-            color: #667eea;
+            color: #ff69b4;
             text-decoration: none;
             font-weight: 500;
+            transition: all 0.3s ease;
         }
-
+        
         .register-link a:hover {
             text-decoration: underline;
+            color: #ff1493;
+            text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
         }
-
+        
         .loading {
             display: none;
             text-align: center;
             margin-top: 10px;
         }
-
+        
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid rgba(255, 105, 180, 0.3);
+            border-top: 3px solid #ff69b4;
             border-radius: 50%;
             width: 30px;
             height: 30px;
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
+        
+        .loading p {
+            color: #cccccc;
+            margin-top: 10px;
+        }
+        
         .password-toggle {
             position: relative;
         }
-
+        
         .password-toggle .toggle-btn {
             position: absolute;
             right: 12px;
@@ -178,14 +225,84 @@
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: #666;
+            color: #ff69b4;
             cursor: pointer;
             font-size: 0.9rem;
             padding: 4px;
+            transition: all 0.3s ease;
         }
-
+        
         .password-toggle .toggle-btn:hover {
-            color: #667eea;
+            color: #ff1493;
+            text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .forgot-password a {
+            color: #ff69b4;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .forgot-password a:hover {
+            color: #ff1493;
+            text-decoration: underline;
+        }
+        
+        .welcome-back {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 105, 180, 0.1);
+            border: 1px solid #ff69b4;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .welcome-back h3 {
+            color: #ff69b4;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-back p {
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+        
+        .auto-redirect {
+            text-align: center;
+            margin-top: 15px;
+            color: #ff69b4;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .redirect-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 105, 180, 0.3);
+            border-top: 2px solid #ff69b4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -195,56 +312,102 @@
             <h1>Akane Pairing</h1>
             <p>Welcome back</p>
         </div>
-
+        
+        <div class="welcome-back" id="welcomeBack">
+            <h3>Welcome back!</h3>
+            <p>You're already signed in. Redirecting to dashboard...</p>
+        </div>
+        
+        <div class="auto-redirect" id="autoRedirect">
+            <span class="redirect-spinner"></span>
+            Redirecting to dashboard...
+        </div>
+        
         <div id="message" class="message"></div>
-
+        
         <form id="loginForm">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required autocomplete="username">
+                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your username">
             </div>
-
+            
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="password-toggle">
-                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                    <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
                     <button type="button" class="toggle-btn" id="togglePassword">Show</button>
                 </div>
             </div>
-
+            
+            <div class="forgot-password">
+                <a href="/forgot-password">Forgot your password?</a>
+            </div>
+            
             <button type="submit" class="btn" id="loginBtn">Sign In</button>
         </form>
-
+        
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p>Signing in...</p>
         </div>
-
+        
         <div class="register-link">
-            <p>Don't have an account? <a href="/">Create one here</a></p>
+            <p>Don't have an account? <a href="/register">Create one here</a></p>
         </div>
     </div>
 
     <script>
         // Check if user is already logged in
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             const authToken = localStorage.getItem('authToken');
+            const username = localStorage.getItem('username');
+            
             if (authToken) {
-                // Verify token is still valid
-                fetch(`/check?auth=${authToken}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.valid) {
+                // Show welcome back message
+                document.getElementById('welcomeBack').style.display = 'block';
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('autoRedirect').style.display = 'block';
+                
+                try {
+                    // Verify token is still valid
+                    const response = await fetch(`/check?auth=${authToken}`);
+                    const data = await response.json();
+                    
+                    if (data.valid) {
+                        // Token is valid, redirect after a short delay
+                        setTimeout(() => {
                             window.location.href = '/dashboard';
-                        }
-                    })
-                    .catch(() => {
-                        // Token verification failed, remove it
+                        }, 2000);
+                    } else {
+                        // Token is invalid, remove it and show login form
                         localStorage.removeItem('authToken');
                         localStorage.removeItem('username');
-                    });
+                        showLoginForm();
+                        showMessage('Your session has expired. Please sign in again.', 'info');
+                    }
+                } catch (error) {
+                    // Network error or server down, remove token and show login form
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('username');
+                    showLoginForm();
+                    showMessage('Unable to verify session. Please sign in again.', 'error');
+                }
+            } else {
+                // No token found, show login form immediately
+                showLoginForm();
             }
         });
+
+        function showLoginForm() {
+            document.getElementById('welcomeBack').style.display = 'none';
+            document.getElementById('autoRedirect').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            
+            // Auto-focus on username field
+            setTimeout(() => {
+                document.getElementById('username').focus();
+            }, 100);
+        }
 
         function showMessage(text, type) {
             const messageEl = document.getElementById('message');
@@ -328,14 +491,16 @@
             }
         });
 
-        // Auto-focus on username field
-        document.getElementById('username').focus();
-
         // Handle Enter key in password field
         document.getElementById('password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 document.getElementById('loginForm').dispatchEvent(new Event('submit'));
             }
+        });
+
+        // Username input validation (no spaces, special characters)
+        document.getElementById('username').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
         });
     </script>
 </body>
