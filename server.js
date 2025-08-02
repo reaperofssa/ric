@@ -14,7 +14,7 @@ app.use(express.static('public')); // Serve static files from public directory
 
 // MongoDB connection
 const MONGODB_URI = 'mongodb+srv://reikeraxx:yGE7i0Oov6KoMzKl@cluster0.g0delua.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-const DB_NAME = 'akane_pairing';
+const DB_NAME = 'akane_pairingx';
 
 let db;
 let usersCollection;
