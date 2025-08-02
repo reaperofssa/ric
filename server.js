@@ -1,48 +1,90 @@
 const express = require('express');
-const fs = require('fs');
 const bcrypt = require('bcrypt');
 const qs = require('querystring');
 const nodemailer = require('nodemailer');
-const axios = require('axios'); // Install with: npm install axios
+const axios = require('axios');
 const path = require('path');
+const { MongoClient } = require('mongodb'); // Install with: npm install mongodb
+
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 app.use(express.static('public')); // Serve static files from public directory
 
-const USERS_FILE = './users.json';
-const VERIFIED_EMAILS_FILE = './verified_emails.json';
-const DEPLOYMENTS_FILE = './deployments.json';
+// MongoDB connection
+const MONGODB_URI = 'mongodb+srv://reikeraxx:yGE7i0Oov6KoMzKl@cluster0.g0delua.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const DB_NAME = 'akane_pairing';
 
-// Load or initialize users file
-const loadUsers = () => {
-    if (!fs.existsSync(USERS_FILE)) return {};
-    return JSON.parse(fs.readFileSync(USERS_FILE));
+let db;
+let usersCollection;
+let verifiedEmailsCollection;
+let deploymentsCollection;
+
+// Initialize MongoDB connection
+async function initializeDatabase() {
+    try {
+        const client = new MongoClient(MONGODB_URI);
+        await client.connect();
+        console.log('Connected to MongoDB');
+        
+        db = client.db(DB_NAME);
+        usersCollection = db.collection('users');
+        verifiedEmailsCollection = db.collection('verified_emails');
+        deploymentsCollection = db.collection('deployments');
+        
+        // Create indexes for better performance
+        await usersCollection.createIndex({ username: 1 }, { unique: true });
+        await usersCollection.createIndex({ authToken: 1 });
+        await usersCollection.createIndex({ email: 1 }); // Remove unique constraint to allow cleanup
+        await verifiedEmailsCollection.createIndex({ email: 1 }, { unique: true });
+        await deploymentsCollection.createIndex({ username: 1 }, { unique: true });
+        
+    } catch (error) {
+        console.error('MongoDB connection error:', error);
+        process.exit(1);
+    }
+}
+
+// Helper functions for database operations
+const findUserByUsername = async (username) => {
+    return await usersCollection.findOne({ username });
 };
 
-const saveUsers = (users) => {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+const findUserByToken = async (authToken) => {
+    return await usersCollection.findOne({ authToken });
 };
 
-// Load verified emails
-const loadVerifiedEmails = () => {
-    if (!fs.existsSync(VERIFIED_EMAILS_FILE)) return [];
-    return JSON.parse(fs.readFileSync(VERIFIED_EMAILS_FILE));
+const createUser = async (userData) => {
+    return await usersCollection.insertOne(userData);
 };
 
-const saveVerifiedEmails = (emails) => {
-    fs.writeFileSync(VERIFIED_EMAILS_FILE, JSON.stringify(emails, null, 2));
+const updateUser = async (username, updateData) => {
+    return await usersCollection.updateOne({ username }, { $set: updateData });
 };
 
-// Load and save deployments
-const loadDeployments = () => {
-    if (!fs.existsSync(DEPLOYMENTS_FILE)) return {};
-    return JSON.parse(fs.readFileSync(DEPLOYMENTS_FILE));
+const isEmailVerified = async (email) => {
+    const result = await verifiedEmailsCollection.findOne({ email });
+    return !!result;
 };
 
-const saveDeployments = (deployments) => {
-    fs.writeFileSync(DEPLOYMENTS_FILE, JSON.stringify(deployments, null, 2));
+const addVerifiedEmail = async (email) => {
+    return await verifiedEmailsCollection.insertOne({ 
+        email, 
+        verified_at: new Date() 
+    });
+};
+
+const findDeployment = async (username) => {
+    return await deploymentsCollection.findOne({ username });
+};
+
+const createDeployment = async (deploymentData) => {
+    return await deploymentsCollection.insertOne(deploymentData);
+};
+
+const getTotalUserCount = async () => {
+    return await usersCollection.countDocuments();
 };
 
 // Generate 89-digit token (digits only)
@@ -59,7 +101,7 @@ const generateVerificationCode = () => {
 };
 
 // Configure nodemailer transport
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
     service: 'gmail',
     auth: {
         user: 'maskeelone0@gmail.com',
@@ -112,7 +154,7 @@ Enter this code to verify your email address.
                         </div>
 
                         <p style="font-size: 14px; color: #666;">
-                            If you didn’t request this code, please ignore this message.
+                            If you didn't request this code, please ignore this message.
                         </p>
                         <p style="font-size: 14px; color: #666;">
                             This code will expire in 10 minutes.
@@ -139,74 +181,91 @@ app.post('/register', async (req, res) => {
         return res.status(400).json({ error: 'Missing fields' });
     }
 
-    const users = loadUsers();
-    const verifiedEmails = loadVerifiedEmails();
-
-    if (users[username]) {
-        return res.status(409).json({ error: 'Username already exists' });
-    }
-
-    if (verifiedEmails.includes(email)) {
-        return res.status(409).json({ error: 'Email is already verified and in use' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const authToken = generateToken();
-    const verificationCode = generateVerificationCode();
-
     try {
-        await sendVerificationEmail(email, verificationCode);
+        const existingUser = await findUserByUsername(username);
+        if (existingUser) {
+            return res.status(409).json({ error: 'Username already exists' });
+        }
+
+        // Check if email is already in use by a VERIFIED account
+        const existingEmailUser = await usersCollection.findOne({ email });
+        if (existingEmailUser && existingEmailUser.verified) {
+            return res.status(409).json({ error: 'Email is already in use by a verified account' });
+        }
+        
+        // If email exists but account is not verified, delete the old unverified account
+        if (existingEmailUser && !existingEmailUser.verified) {
+            await usersCollection.deleteOne({ email });
+            console.log(`Deleted unverified account for email: ${email}`);
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const authToken = generateToken();
+        const verificationCode = generateVerificationCode();
+
+        try {
+            await sendVerificationEmail(email, verificationCode);
+        } catch (error) {
+            console.error('Email sending error:', error);
+            return res.status(500).json({ error: 'Failed to send verification email' });
+        }
+
+        const userData = {
+            username,
+            email,
+            password: hashedPassword,
+            authToken,
+            verified: false,
+            verificationCode,
+            created_at: new Date()
+        };
+
+        await createUser(userData);
+
+        res.json({
+            message: 'User registered. Verification code sent to email.',
+            authToken
+        });
     } catch (error) {
-        return res.status(500).json({ error: 'Failed to send verification email' });
+        console.error('Registration error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-
-    users[username] = {
-        email,
-        password: hashedPassword,
-        authToken,
-        verified: false,
-        verificationCode
-    };
-
-    saveUsers(users);
-
-    res.json({
-        message: 'User registered. Verification code sent to email.',
-        authToken
-    });
 });
 
 // Verify email route
-app.post('/verify', (req, res) => {
+app.post('/verify', async (req, res) => {
     const { username, code } = req.body;
 
-    const users = loadUsers();
-    const verifiedEmails = loadVerifiedEmails();
+    try {
+        const user = await findUserByUsername(username);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-    const user = users[username];
-    if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        if (user.verified) {
+            return res.status(400).json({ error: 'User already verified' });
+        }
+
+        if (user.verificationCode !== code) {
+            return res.status(400).json({ error: 'Invalid verification code' });
+        }
+
+        await updateUser(username, { 
+            verified: true, 
+            verified_at: new Date(),
+            $unset: { verificationCode: "" }
+        });
+
+        const emailVerified = await isEmailVerified(user.email);
+        if (!emailVerified) {
+            await addVerifiedEmail(user.email);
+        }
+
+        res.json({ message: 'Email verified successfully' });
+    } catch (error) {
+        console.error('Verification error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-
-    if (user.verified) {
-        return res.status(400).json({ error: 'User already verified' });
-    }
-
-    if (user.verificationCode !== code) {
-        return res.status(400).json({ error: 'Invalid verification code' });
-    }
-
-    user.verified = true;
-    delete user.verificationCode;
-
-    if (!verifiedEmails.includes(user.email)) {
-        verifiedEmails.push(user.email);
-    }
-
-    saveUsers(users);
-    saveVerifiedEmails(verifiedEmails);
-
-    res.json({ message: 'Email verified successfully' });
 });
 
 // Login route
@@ -217,47 +276,56 @@ app.post('/login', async (req, res) => {
         return res.status(400).json({ error: 'Username and password required' });
     }
 
-    const users = loadUsers();
-    const user = users[username];
+    try {
+        const user = await findUserByUsername(username);
 
-    if (!user) {
-        return res.status(401).json({ error: 'Invalid credentials' });
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        if (!user.verified) {
+            return res.status(401).json({ error: 'Account not verified' });
+        }
+
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // Update last login
+        await updateUser(username, { last_login: new Date() });
+
+        res.json({
+            message: 'Login successful',
+            authToken: user.authToken,
+            username: username
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-
-    if (!user.verified) {
-        return res.status(401).json({ error: 'Account not verified' });
-    }
-
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    res.json({
-        message: 'Login successful',
-        authToken: user.authToken,
-        username: username
-    });
 });
 
 // Check auth token route
-app.get('/check', (req, res) => {
+app.get('/check', async (req, res) => {
     const { auth } = req.query;
 
     if (!auth) {
         return res.status(400).json({ valid: false, error: 'Missing auth token' });
     }
 
-    const users = loadUsers();
+    try {
+        const user = await findUserByToken(auth);
 
-    // Find user by token
-    const user = Object.values(users).find(u => u.authToken === auth);
+        if (!user || !user.verified) {
+            return res.json({ valid: false });
+        }
 
-    if (!user || !user.verified) {
-        return res.json({ valid: false });
+        res.json({ valid: true });
+    } catch (error) {
+        console.error('Auth check error:', error);
+        res.status(500).json({ valid: false, error: 'Internal server error' });
     }
-
-    res.json({ valid: true });
 });
 
 // Start deployment route
@@ -271,55 +339,52 @@ app.post('/start', async (req, res) => {
         });
     }
 
-    // Verify auth token
-    const users = loadUsers();
-    const user = Object.values(users).find(u => u.authToken === authToken);
-
-    if (!user || !user.verified) {
-        return res.status(401).json({ error: 'Invalid or unverified auth token' });
-    }
-
-    // Get username for tracking deployments
-    const username = Object.keys(users).find(key => users[key].authToken === authToken);
-
-    // Check if user has already deployed
-    const deployments = loadDeployments();
-    if (deployments[username]) {
-        return res.status(409).json({ 
-            error: 'Only one deployment allowed per account. You have already deployed.' 
-        });
-    }
-
     try {
-    // Clean the session_id before using it
-    const cleanSessionId = String(session_id)
-        .trim()                     // Remove leading/trailing whitespace
-        .replace(/\u200B/g, '')    // Remove zero-width spaces
-        .replace(/\s/g, '');       // Remove any accidental spaces
+        // Verify auth token
+        const user = await findUserByToken(authToken);
 
-    console.log('Cleaned session_id:', JSON.stringify(cleanSessionId));
-
-    // Make deploy request to external API
-    const deployResponse = await axios.post('https://tested-0939583b45ae.herokuapp.com/deploy',
-        qs.stringify({ session_id: cleanSessionId }),
-        {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            timeout: 1900000 // 30 second timeout
+        if (!user || !user.verified) {
+            return res.status(401).json({ error: 'Invalid or unverified auth token' });
         }
-    );
-    
+
+        // Check if user has already deployed
+        const existingDeployment = await findDeployment(user.username);
+        if (existingDeployment) {
+            return res.status(409).json({ 
+                error: 'Only one deployment allowed per account. You have already deployed.' 
+            });
+        }
+
+        // Clean the session_id before using it
+        const cleanSessionId = String(session_id)
+            .trim()                     // Remove leading/trailing whitespace
+            .replace(/\u200B/g, '')    // Remove zero-width spaces
+            .replace(/\s/g, '');       // Remove any accidental spaces
+
+        console.log('Cleaned session_id:', JSON.stringify(cleanSessionId));
+
+        // Make deploy request to external API
+        const deployResponse = await axios.post('https://tested-0939583b45ae.herokuapp.com/deploy',
+            qs.stringify({ session_id: cleanSessionId }),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                timeout: 1900000 // 30 second timeout
+            }
+        );
 
         // Check if deploy was successful
         if (deployResponse.status === 200 || deployResponse.status === 201) {
             // Mark user as deployed
-            deployments[username] = {
+            const deploymentData = {
+                username: user.username,
                 session_id: session_id,
-                deployed_at: new Date().toISOString(),
+                deployed_at: new Date(),
                 deploy_response: deployResponse.data
             };
-            saveDeployments(deployments);
+            
+            await createDeployment(deploymentData);
 
             return res.json({
                 success: true,
@@ -360,76 +425,94 @@ app.post('/start', async (req, res) => {
 });
 
 // Get deployment status route
-app.get('/deployment-status', (req, res) => {
+app.get('/deployment-status', async (req, res) => {
     const { authToken } = req.query;
 
     if (!authToken) {
         return res.status(400).json({ error: 'Auth token required' });
     }
 
-    const users = loadUsers();
-    const user = Object.values(users).find(u => u.authToken === authToken);
+    try {
+        const user = await findUserByToken(authToken);
 
-    if (!user || !user.verified) {
-        return res.status(401).json({ error: 'Invalid auth token' });
-    }
+        if (!user || !user.verified) {
+            return res.status(401).json({ error: 'Invalid auth token' });
+        }
 
-    const username = Object.keys(users).find(key => users[key].authToken === authToken);
-    const deployments = loadDeployments();
+        const deployment = await findDeployment(user.username);
 
-    if (deployments[username]) {
-        return res.json({
-            deployed: true,
-            deployment_info: deployments[username]
-        });
-    } else {
-        return res.json({
-            deployed: false,
-            message: 'No deployment found for this account'
-        });
+        if (deployment) {
+            return res.json({
+                deployed: true,
+                deployment_info: deployment
+            });
+        } else {
+            return res.json({
+                deployed: false,
+                message: 'No deployment found for this account'
+            });
+        }
+    } catch (error) {
+        console.error('Deployment status error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 // Get user info route
-app.get('/user-info', (req, res) => {
+app.get('/user-info', async (req, res) => {
     const { authToken } = req.query;
 
     if (!authToken) {
         return res.status(400).json({ error: 'Auth token required' });
     }
 
-    const users = loadUsers();
-    
-    // Find user by token
-    const userEntry = Object.entries(users).find(([username, userData]) => 
-        userData.authToken === authToken
-    );
+    try {
+        const user = await findUserByToken(authToken);
 
-    if (!userEntry) {
-        return res.status(401).json({ error: 'Invalid auth token' });
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid auth token' });
+        }
+
+        if (!user.verified) {
+            return res.status(401).json({ error: 'Account not verified' });
+        }
+
+        // Get deployment info if exists
+        const deployment = await findDeployment(user.username);
+
+        res.json({
+            username: user.username,
+            email: user.email,
+            verified: user.verified,
+            hasDeployment: !!deployment,
+            deploymentInfo: deployment
+        });
+    } catch (error) {
+        console.error('User info error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
+});
 
-    const [username, userData] = userEntry;
-
-    if (!userData.verified) {
-        return res.status(401).json({ error: 'Account not verified' });
+// Get total user count route
+app.get('/user-count', async (req, res) => {
+    try {
+        const totalUsers = await getTotalUserCount();
+        res.json({
+            total_users: totalUsers,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('User count error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-
-    // Get deployment info if exists
-    const deployments = loadDeployments();
-    const deploymentInfo = deployments[username] || null;
-
-    res.json({
-        username: username,
-        email: userData.email,
-        verified: userData.verified,
-        hasDeployment: !!deploymentInfo,
-        deploymentInfo: deploymentInfo
-    });
 });
 
 // HTML Routes
 app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
@@ -441,6 +524,13 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+// Initialize database and start server
+async function startServer() {
+    await initializeDatabase();
+    
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
+
+startServer().catch(console.error);
