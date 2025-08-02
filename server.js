@@ -306,7 +306,7 @@ app.post('/start', async (req, res) => {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            timeout: 30000 // 30 second timeout
+            timeout: 1900000 // 30 second timeout
         }
     );
     
