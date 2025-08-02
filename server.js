@@ -252,9 +252,14 @@ app.post('/verify', async (req, res) => {
 
         await updateUser(username, { 
             verified: true, 
-            verified_at: new Date(),
-            $unset: { verificationCode: "" }
+            verified_at: new Date()
         });
+        
+        // Remove verification code separately
+        await usersCollection.updateOne(
+            { username }, 
+            { $unset: { verificationCode: "" } }
+        );
 
         const emailVerified = await isEmailVerified(user.email);
         if (!emailVerified) {
@@ -509,10 +514,6 @@ app.get('/user-count', async (req, res) => {
 
 // HTML Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
-
-app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
