@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
+const qs = require('querystring');
 const nodemailer = require('nodemailer');
 const axios = require('axios'); // Install with: npm install axios
 const path = require('path');
@@ -299,14 +300,16 @@ app.post('/start', async (req, res) => {
     console.log('Cleaned session_id:', JSON.stringify(cleanSessionId));
 
     // Make deploy request to external API
-    const deployResponse = await axios.post('https://tested-0939583b45ae.herokuapp.com/deploy', {
-        session_id: cleanSessionId
-    }, {
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        timeout: 30000 // 30 second timeout
-    });
+    const deployResponse = await axios.post('https://tested-0939583b45ae.herokuapp.com/deploy',
+        qs.stringify({ session_id: cleanSessionId }),
+        {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            timeout: 30000 // 30 second timeout
+        }
+    );
+    
 
         // Check if deploy was successful
         if (deployResponse.status === 200 || deployResponse.status === 201) {
