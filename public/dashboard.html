@@ -10,20 +10,22 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b2e 50%, #1a1a1a 100%);
             min-height: 100vh;
             padding: 20px;
+            color: #ffffff;
         }
-
+        
         .header {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ff69b4;
             padding: 20px 30px;
             border-radius: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
             backdrop-filter: blur(10px);
             display: flex;
             justify-content: space-between;
@@ -31,69 +33,80 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-
+        
         .header h1 {
-            color: #667eea;
-            font-size: 2rem;
+            color: #ff69b4;
+            font-size: 2.5rem;
             font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
         }
-
+        
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-
+        
         .user-details {
             text-align: right;
         }
-
+        
         .user-details h3 {
-            color: #333;
+            color: #ff69b4;
             font-size: 1.1rem;
         }
-
+        
         .user-details p {
-            color: #666;
+            color: #cccccc;
             font-size: 0.9rem;
         }
-
+        
         .logout-btn {
             padding: 10px 20px;
-            background: #dc3545;
+            background: linear-gradient(135deg, #ff1744 0%, #d81b60 100%);
             color: white;
-            border: none;
+            border: 1px solid #ff69b4;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s ease;
         }
-
+        
         .logout-btn:hover {
-            background: #c82333;
+            background: linear-gradient(135deg, #d81b60 0%, #ff1744 100%);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
         }
-
+        
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
-
+        
         .dashboard-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
+            margin-bottom: 30px;
         }
-
+        
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #ff69b4;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.1);
             backdrop-filter: blur(10px);
             animation: slideUp 0.6s ease-out;
+            transition: all 0.3s ease;
         }
-
+        
+        .card:hover {
+            border-color: #ff1493;
+            box-shadow: 0 15px 40px rgba(255, 105, 180, 0.2);
+            transform: translateY(-5px);
+        }
+        
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -104,195 +117,358 @@
                 transform: translateY(0);
             }
         }
-
+        
         .card h2 {
-            color: #333;
+            color: #ff69b4;
             margin-bottom: 20px;
             font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
         }
-
+        
         .deployment-status {
             text-align: center;
         }
-
+        
         .status-indicator {
             width: 80px;
             height: 80px;
             border-radius: 50%;
+            border: 2px solid #ff69b4;
             margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
         }
-
+        
         .status-indicator.deployed {
-            background: #d4edda;
-            color: #155724;
+            background: rgba(40, 167, 69, 0.2);
+            border-color: #28a745;
+            color: #28a745;
         }
-
+        
         .status-indicator.not-deployed {
-            background: #f8d7da;
-            color: #721c24;
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+            color: #dc3545;
         }
-
+        
         .form-group {
             margin-bottom: 20px;
         }
-
+        
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: #ff69b4;
             font-weight: 500;
         }
-
+        
         .form-group input {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e1e1e1;
+            border: 1px solid #ff69b4;
             border-radius: 10px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
         }
-
+        
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #ff1493;
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
         }
-
+        
+        .form-group input::placeholder {
+            color: #cccccc;
+        }
+        
         .btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
             color: white;
-            border: none;
+            border: 1px solid #ff69b4;
             border-radius: 10px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
+        
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.4);
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
         }
-
+        
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-
+        
         .btn.success {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-color: #28a745;
         }
-
+        
+        .btn.secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            border-color: #6c757d;
+        }
+        
+        .get-session-btn {
+            background: linear-gradient(135deg, #ff8a80 0%, #ff5722 100%);
+            border-color: #ff5722;
+            margin-bottom: 15px;
+        }
+        
+        .get-session-btn:hover {
+            background: linear-gradient(135deg, #ff5722 0%, #ff8a80 100%);
+        }
+        
         .message {
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 15px;
             display: none;
+            border: 1px solid;
         }
-
+        
         .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border-color: #28a745;
         }
-
+        
         .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border-color: #dc3545;
         }
-
+        
+        .message.info {
+            background: rgba(255, 105, 180, 0.2);
+            color: #ff69b4;
+            border-color: #ff69b4;
+        }
+        
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-bottom: 20px;
         }
-
+        
         .info-item {
             padding: 15px;
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #ff69b4;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #ff69b4;
         }
-
+        
         .info-item h4 {
-            color: #333;
+            color: #ff69b4;
             margin-bottom: 5px;
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
+        
         .info-item p {
-            color: #666;
+            color: #cccccc;
             font-size: 1rem;
             word-break: break-all;
         }
-
+        
         .loading {
             display: none;
             text-align: center;
             margin: 20px 0;
         }
-
+        
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid rgba(255, 105, 180, 0.3);
+            border-top: 3px solid #ff69b4;
             border-radius: 50%;
             width: 30px;
             height: 30px;
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
+        
         .deployment-info {
-            background: #e3f2fd;
+            background: rgba(255, 105, 180, 0.1);
+            border: 1px solid #ff69b4;
             padding: 15px;
             border-radius: 10px;
             margin-top: 15px;
         }
-
+        
         .deployment-info h4 {
-            color: #1565c0;
+            color: #ff69b4;
             margin-bottom: 10px;
         }
-
+        
         .deployment-info p {
-            color: #424242;
+            color: #cccccc;
             margin-bottom: 5px;
             font-size: 0.9rem;
         }
-
+        
+        /* New sections styling */
+        .features-section {
+            margin-top: 30px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #ff69b4;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-color: #ff1493;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .feature-card h3 {
+            color: #ff69b4;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .feature-card p {
+            color: #cccccc;
+            line-height: 1.6;
+        }
+        
+        .stats-section {
+            margin-top: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #ff69b4;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff69b4;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #cccccc;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .help-section {
+            margin-top: 30px;
+        }
+        
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .help-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #ff69b4;
+            padding: 25px;
+            border-radius: 12px;
+        }
+        
+        .help-card h3 {
+            color: #ff69b4;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .help-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .help-card li {
+            color: #cccccc;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .help-card li:before {
+            content: "→";
+            color: #ff69b4;
+            position: absolute;
+            left: 0;
+        }
+        
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 text-align: center;
             }
-
+            
             .user-info {
                 flex-direction: column;
             }
-
+            
             .user-details {
                 text-align: center;
             }
-
+            
             .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid,
+            .stats-grid,
+            .help-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -348,13 +524,18 @@
             </div>
 
             <div class="card">
-                <h2>Start Deployment</h2>
+                <h2>Bot Management</h2>
                 <div id="deployMessage" class="message"></div>
+                <div id="sessionMessage" class="message"></div>
+                
+                <button type="button" class="btn get-session-btn" id="getSessionBtn" onclick="getSession()">
+                    <span id="getSessionBtnText">Get Session</span>
+                </button>
                 
                 <form id="deploymentForm">
                     <div class="form-group">
                         <label for="sessionId">Session ID</label>
-                        <input type="text" id="sessionIdInput" name="sessionId" required 
+                        <input type="text" id="sessionIdInput" name="sessionId" required
                                placeholder="Enter your session ID">
                     </div>
                     
@@ -369,11 +550,134 @@
                 </div>
             </div>
         </div>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="card">
+                <h2>Platform Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon">🤖</span>
+                        <h3>Advanced Fast Secure</h3>
+                        <p>Advanced capabilities with natural language processing and smart responses.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">⚡</span>
+                        <h3>Lightning Fast</h3>
+                        <p>Optimized performance with minimal latency for real-time interactions and instant responses.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🔒</span>
+                        <h3>Secure & Private</h3>
+                        <p>End-to-end encryption and privacy-focused design to keep your data safe and secure.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🌐</span>
+                        <h3>Global Access</h3>
+                        <p>Deploy A Free Bot In Minutes With No Additional Verification.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section class="stats-section">
+            <div class="card">
+                <h2>Platform Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">99.9%</span>
+                        <span class="stat-label">Uptime</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Support</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">200+</span>
+                        <span class="stat-label">Users BandWidth</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">50ms</span>
+                        <span class="stat-label">Response Time</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Help Section -->
+        <section class="help-section">
+            <div class="help-grid">
+                <div class="help-card">
+                    <h3>Getting Started</h3>
+                    <ul>
+                        <li>Click "Get Session" to obtain your session ID</li>
+                        <li>Copy the session ID from the opened page</li>
+                        <li>Paste it in the Session ID field above</li>
+                        <li>Click "Start Deployment" to activate your bot</li>
+                        <li>Wait for deployment confirmation</li>
+                    </ul>
+                </div>
+                <div class="help-card">
+                    <h3>Troubleshooting</h3>
+                    <ul>
+                        <li>Ensure your session ID is valid and active</li>
+                        <li>Check your internet connection</li>
+                        <li>Clear browser cache if experiencing issues</li>
+                        <li>Contact support if problems persist</li>
+                        <li>Monitor deployment status regularly</li>
+                    </ul>
+                </div>
+                <div class="help-card">
+                    <h3>Best Practices</h3>
+                    <ul>
+                        <li>Keep your auth token secure and private</li>
+                        <li>Don't share session IDs with others</li>
+                        <li>Message Admin Incase of Any Issues</li>
+                        <li>Update your session when it expires</li>
+                        <li>Follow platform guidelines and terms</li>
+                    </ul>
+                </div>
+                <div class="help-card">
+                    <h3>Support & Resources</h3>
+                    <ul>
+                        <li>24/7 technical support available</li>
+                        <li>Comprehensive documentation</li>
+                        <li>Community forums and discussions</li>
+                        <li>Video tutorials and guides</li>
+                        <li>Regular platform updates</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
     </div>
 
     <script>
         let userInfo = null;
         let deploymentStatus = null;
+
+        // Get Session functionality
+        function getSession() {
+            // Show loading message
+            showMessage('Your Bot will start in minutes...', 'info', 'sessionMessage');
+            
+            // Open the session URL in a new tab
+            window.open('https://arch-session.onrender.com', '_blank');
+            
+            // Update button text temporarily
+            const btn = document.getElementById('getSessionBtn');
+            const btnText = document.getElementById('getSessionBtnText');
+            const originalText = btnText.textContent;
+            
+            btnText.textContent = 'Opening Session...';
+            btn.disabled = true;
+            
+            // Reset button after 3 seconds
+            setTimeout(() => {
+                btnText.textContent = originalText;
+                btn.disabled = false;
+            }, 3000);
+        }
 
         // Check authentication on page load
         window.addEventListener('load', async () => {
