@@ -4,16 +4,15 @@ const qs = require('querystring');
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 const path = require('path');
-const { MongoClient } = require('mongodb'); // Install with: npm install mongodb
+const { MongoClient } = require('mongodb');
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-app.use(express.static('public')); // Serve static files from public directory
+app.use(express.static('public'));
 
-// MongoDB connection
-const MONGODB_URI = 'mongodb+srv://reikeraxx:yGE7i0Oov6KoMzKl@cluster0.g0delua.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const MONGODB_URI = '';
 const DB_NAME = 'akane_pairingx';
 
 let db;
@@ -21,7 +20,6 @@ let usersCollection;
 let verifiedEmailsCollection;
 let deploymentsCollection;
 
-// Initialize MongoDB connection
 async function initializeDatabase() {
     try {
         const client = new MongoClient(MONGODB_URI);
@@ -33,10 +31,9 @@ async function initializeDatabase() {
         verifiedEmailsCollection = db.collection('verified_emails');
         deploymentsCollection = db.collection('deployments');
         
-        // Create indexes for better performance
         await usersCollection.createIndex({ username: 1 }, { unique: true });
         await usersCollection.createIndex({ authToken: 1 });
-        await usersCollection.createIndex({ email: 1 }); // Remove unique constraint to allow cleanup
+        await usersCollection.createIndex({ email: 1 });
         await verifiedEmailsCollection.createIndex({ email: 1 }, { unique: true });
         await deploymentsCollection.createIndex({ username: 1 }, { unique: true });
         
@@ -46,7 +43,6 @@ async function initializeDatabase() {
     }
 }
 
-// Helper functions for database operations
 const findUserByUsername = async (username) => {
     return await usersCollection.findOne({ username });
 };
@@ -87,7 +83,6 @@ const getTotalUserCount = async () => {
     return await usersCollection.countDocuments();
 };
 
-// Generate 89-digit token (digits only)
 const generateToken = () => {
     let token = '';
     while (token.length < 89) {
@@ -97,11 +92,10 @@ const generateToken = () => {
 };
 
 const generateVerificationCode = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+    return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// Configure nodemailer transport
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
     service: 'gmail',
     auth: {
         user: 'maskeelone0@gmail.com',
@@ -109,7 +103,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Send verification email
 const sendVerificationEmail = async (email, code) => {
     await transporter.sendMail({
         from: '"Akane Pairing" <no-reply@akanepairing.com>',
@@ -173,7 +166,6 @@ Enter this code to verify your email address.
     });
 };
 
-// Register route
 app.post('/register', async (req, res) => {
     const { username, password, email } = req.body;
 
@@ -187,13 +179,11 @@ app.post('/register', async (req, res) => {
             return res.status(409).json({ error: 'Username already exists' });
         }
 
-        // Check if email is already in use by a VERIFIED account
         const existingEmailUser = await usersCollection.findOne({ email });
         if (existingEmailUser && existingEmailUser.verified) {
             return res.status(409).json({ error: 'Email is already in use by a verified account' });
         }
         
-        // If email exists but account is not verified, delete the old unverified account
         if (existingEmailUser && !existingEmailUser.verified) {
             await usersCollection.deleteOne({ email });
             console.log(`Deleted unverified account for email: ${email}`);
@@ -232,7 +222,6 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Verify email route
 app.post('/verify', async (req, res) => {
     const { username, code } = req.body;
 
@@ -255,7 +244,6 @@ app.post('/verify', async (req, res) => {
             verified_at: new Date()
         });
         
-        // Remove verification code separately
         await usersCollection.updateOne(
             { username }, 
             { $unset: { verificationCode: "" } }
@@ -273,7 +261,6 @@ app.post('/verify', async (req, res) => {
     }
 });
 
-// Login route
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -297,7 +284,6 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        // Update last login
         await updateUser(username, { last_login: new Date() });
 
         res.json({
@@ -311,7 +297,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Check auth token route
 app.get('/check', async (req, res) => {
     const { auth } = req.query;
 
@@ -333,11 +318,9 @@ app.get('/check', async (req, res) => {
     }
 });
 
-// Start deployment route
 app.post('/start', async (req, res) => {
     const { authToken, session_id } = req.body;
 
-    // Validate required fields
     if (!authToken || !session_id) {
         return res.status(400).json({ 
             error: 'Missing required fields: authToken and session_id' 
@@ -345,14 +328,12 @@ app.post('/start', async (req, res) => {
     }
 
     try {
-        // Verify auth token
         const user = await findUserByToken(authToken);
 
         if (!user || !user.verified) {
             return res.status(401).json({ error: 'Invalid or unverified auth token' });
         }
 
-        // Check if user has already deployed
         const existingDeployment = await findDeployment(user.username);
         if (existingDeployment) {
             return res.status(409).json({ 
@@ -360,28 +341,24 @@ app.post('/start', async (req, res) => {
             });
         }
 
-        // Clean the session_id before using it
         const cleanSessionId = String(session_id)
-            .trim()                     // Remove leading/trailing whitespace
-            .replace(/\u200B/g, '')    // Remove zero-width spaces
-            .replace(/\s/g, '');       // Remove any accidental spaces
+            .trim()
+            .replace(/\u200B/g, '')
+            .replace(/\s/g, '');
 
         console.log('Cleaned session_id:', JSON.stringify(cleanSessionId));
 
-        // Make deploy request to external API
         const deployResponse = await axios.post('https://tested-0939583b45ae.herokuapp.com/deploy',
             qs.stringify({ session_id: cleanSessionId }),
             {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                timeout: 1900000 // 30 second timeout
+                timeout: 1900000
             }
         );
 
-        // Check if deploy was successful
         if (deployResponse.status === 200 || deployResponse.status === 201) {
-            // Mark user as deployed
             const deploymentData = {
                 username: user.username,
                 session_id: session_id,
@@ -406,7 +383,6 @@ app.post('/start', async (req, res) => {
     } catch (error) {
         console.error('Deploy API Error:', error.message);
         
-        // Handle different types of errors
         if (error.code === 'ECONNABORTED') {
             return res.status(408).json({ 
                 error: 'Deploy request timed out. Please try again.' 
@@ -414,14 +390,12 @@ app.post('/start', async (req, res) => {
         }
         
         if (error.response) {
-            // The external API responded with an error
             return res.status(error.response.status).json({
                 error: 'Deploy failed',
                 details: error.response.data
             });
         }
         
-        // Network or other errors
         return res.status(500).json({
             error: 'Failed to connect to deploy service',
             details: error.message
@@ -429,7 +403,6 @@ app.post('/start', async (req, res) => {
     }
 });
 
-// Get deployment status route
 app.get('/deployment-status', async (req, res) => {
     const { authToken } = req.query;
 
@@ -463,7 +436,6 @@ app.get('/deployment-status', async (req, res) => {
     }
 });
 
-// Get user info route
 app.get('/user-info', async (req, res) => {
     const { authToken } = req.query;
 
@@ -482,7 +454,6 @@ app.get('/user-info', async (req, res) => {
             return res.status(401).json({ error: 'Account not verified' });
         }
 
-        // Get deployment info if exists
         const deployment = await findDeployment(user.username);
 
         res.json({
@@ -498,7 +469,6 @@ app.get('/user-info', async (req, res) => {
     }
 });
 
-// Get total user count route
 app.get('/user-count', async (req, res) => {
     try {
         const totalUsers = await getTotalUserCount();
@@ -512,7 +482,6 @@ app.get('/user-count', async (req, res) => {
     }
 });
 
-// HTML Routes
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
@@ -525,7 +494,6 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// Initialize database and start server
 async function startServer() {
     await initializeDatabase();
     
