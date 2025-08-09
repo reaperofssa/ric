@@ -348,7 +348,7 @@ app.post('/start', async (req, res) => {
 
         console.log('Cleaned session_id:', JSON.stringify(cleanSessionId));
 
-        const deployResponse = await axios.post('https://tested-0939583b45ae.herokuapp.com/deploy',
+        const deployResponse = await axios.post('https://akane-md-3ed1616b88df.herokuapp.com/deploy',
             qs.stringify({ session_id: cleanSessionId }),
             {
                 headers: {
