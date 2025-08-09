@@ -12,7 +12,7 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static('public'));
 
-const MONGODB_URI = '';
+const MONGODB_URI = 'mongodb+srv://reikeraxx:yGE7i0Oov6KoMzKl@cluster0.g0delua.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 const DB_NAME = 'akane_pairingx';
 
 let db;
